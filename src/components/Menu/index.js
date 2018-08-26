@@ -20,6 +20,9 @@ const MenuComponent = () => (
       <Menu.Item>
         <Link to="/subscription">Subscription Demo</Link>
       </Menu.Item>
+      <Menu.Item>
+        <Link to="/hackathon">Hackathon</Link>
+      </Menu.Item>
     </Container>
   </Menu>
 );

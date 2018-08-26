@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-
 import { dataSources, getClient } from '../../libs/ocap';
-
 import Layout from '../../components/Layout';
 import Loading from '../../components/Loading';
 
@@ -24,18 +22,13 @@ class SubscriptionDemo extends Component {
 
   async componentDidMount() {
     const client = getClient(this.state.dataSource.name);
-
     // Subscription
     const subscription = await client.newBlockMined();
     subscription.on('data', data => {
       this.setState({
-        message: data,
+        message: data["newBlockMined"],
         timestamp: new Date(),
       });
-
-      setTimeout(() => {
-        this.setState({ message: null });
-      }, 5000);
     });
 
     this.setState({ subscribed: true });
@@ -53,7 +46,6 @@ class SubscriptionDemo extends Component {
         <p className="alert">
           Open BROWSER CONSOLE to view methods provided by OCAPClient.
         </p>
-
         {subscribed || (
           <p>
             Try to subscribe to {dataSource.name.toUpperCase()}.newBlockMined
