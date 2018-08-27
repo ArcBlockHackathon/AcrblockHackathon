@@ -1,4 +1,5 @@
-## Arcblock Hackathon Demo URL:
+## Arcblock Hackathon Demo URL
+
 https://arcblock-to-the-moon.now.sh/hackathon
 
 # ocap-react-starter
