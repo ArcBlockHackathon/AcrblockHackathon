@@ -21,7 +21,7 @@ const MenuComponent = () => (
         <Link to="/subscription">Subscription Demo</Link>
       </Menu.Item>
       <Menu.Item>
-        <Link to="/hackathon">Hackathon</Link>
+        <Link to="/hackathon">Hackathon Demo</Link>
       </Menu.Item>
     </Container>
   </Menu>

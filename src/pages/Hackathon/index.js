@@ -6,8 +6,8 @@ import Loading from '../../components/Loading';
 
 import './style.css';
 
-var CanvasJSReact = require('../../libs/canvasjs.react');
-var CanvasJSChart = CanvasJSReact.CanvasJSChart;
+let CanvasJSReact = require('../../libs/canvasjs.react');
+let CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 class Hackathon extends Component {
   constructor(props) {
@@ -22,30 +22,29 @@ class Hackathon extends Component {
       minerPie: [],
       blockSum: 0
     };
-
-    console.log(getClient(this.state.dataSource.name));
-  }
+    }
 
   async componentDidMount() {
     const client = getClient(this.state.dataSource.name);
+
     // Subscription
     const subscription = await client.newBlockMined();
     subscription.on('data', data => {
-      var date = new Date();
+      const date = new Date();
         this.state.ethPrice.push({
         x: date,
         y: data["newBlockMined"]["priceInUsd"]
       });
 
       // Increase miner by 1
-      var miner = data["newBlockMined"]["extraDataPlain"].toString();
+      let miner = data["newBlockMined"]["extraDataPlain"].toString();
       miner = miner.split("-")[0];
       if (miner === "" || miner === " ") {
         miner = "Normal Person";
       }
 
-      var found = false;
-      for (var i = 0; i < this.state.minerPie.length; i++) {
+      let found = false;
+      for (let i = 0; i < this.state.minerPie.length; i++) {
         if (this.state.minerPie[i].name === miner) {
           this.state.minerPie[i].y += 1;
           found = true;
@@ -59,14 +58,10 @@ class Hackathon extends Component {
         });
       }
 
-      console.log(miner);
-      console.log(new Date());
-      console.log(data["newBlockMined"]["priceInUsd"]);
-
       const blockSum = this.state.blockSum;
       this.setState({
         message: data["newBlockMined"],
-        timestamp: new Date(),
+        timestamp: date,
         blockSum: blockSum + 1
       });
     });
@@ -76,7 +71,7 @@ class Hackathon extends Component {
   render() {
     const { subscribed, message, timestamp, dataSource, ethPrice, minerPie, blockSum} = this.state;
 
-    const doughnutOptions = {
+    const minerDoughnut = {
       animationEnabled: true,
       title: {
         text: "Miner Distribution"
@@ -91,20 +86,19 @@ class Hackathon extends Component {
         type: "doughnut",
         showInLegend: true,
         indexLabel: "{name} ({percentage}%)",
-        toolTipContent: "<b>{name}</b>: {y} <b>({percentage}%)</b>",
-        yValueFormatString: "#,###'%'",
+        toolTipContent: "<b>{name}</b>: {y} <b> block(s)</b>",
+        yValueFormatString: "#",
         dataPoints: minerPie
       }]
     };
 
     //calculate percentage
-    var dataPoint = doughnutOptions.data[0].dataPoints;
-    console.log(blockSum);
-    for(var i = 0; i < dataPoint.length; i++) {
-        doughnutOptions.data[0].dataPoints[i].percentage = ((dataPoint[i].y / blockSum) * 100).toFixed(2);
+    let dataPoint = minerDoughnut.data[0].dataPoints;
+    for(let i = 0; i < dataPoint.length; i++) {
+      minerDoughnut.data[0].dataPoints[i].percentage = ((dataPoint[i].y / blockSum) * 100).toFixed(2);
     }
 
-    const options = {
+    const ethPriceChart = {
       animationEnabled: true,
       exportEnabled: true,
       theme: "light2", // "light1", "dark1", "dark2"
@@ -127,10 +121,9 @@ class Hackathon extends Component {
     };
 
     return (
-
       <Layout>
         <h2>
-          Hackathon Demo: {dataSource.name.toUpperCase()}.newBlockMined
+          Hackathon Demo: ETH price and miner visualization
         </h2>
 
         {subscribed || (
@@ -160,21 +153,20 @@ class Hackathon extends Component {
             </p>
           </div>
         )}
-        <div>
-          <CanvasJSChart options = {options}
-            /* onRef={ref => this.chart = ref} */
-          />
-          {/*You can get reference to the chart instance as shown above using onRef. This allows you to access all chart properties and methods*/}
-        </div>
-        <div>
-          <CanvasJSChart options = {doughnutOptions}
-            /* onRef={ref => this.chart = ref} */
-          />
-          {/*You can get reference to the chart instance as shown above using onRef. This allows you to access all chart properties and methods*/}
-        </div>
+
+        {message && (
+          <div>
+            <CanvasJSChart options = {ethPriceChart}/>
+          </div>
+        )}
+
+        {message && (
+          <div>
+            <CanvasJSChart options = {minerDoughnut}/>
+          </div>
+        )}
       </Layout>
     );
   }
 }
-
 export default withRouter(Hackathon);
